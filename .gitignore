@@ -1,0 +1,53 @@
+# 编译后的文件
+*.o
+*.so
+*.exe
+*.dll
+*.pdb
+*.ilk
+*.dylib
+
+# 编辑器相关文件
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# 运行时文件
+node_modules/
+
+# 日志文件
+*.log
+logs/
+
+# 缓存文件
+.cache/
+*.cache
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 小程序相关
+project.private.config.json
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# 其他
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Windows 文件
+Thumbs.db
