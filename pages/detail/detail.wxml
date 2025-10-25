@@ -1,0 +1,146 @@
+<!-- 网址详情页面 -->
+<view class="detail-page">
+  <!-- 网站预览 -->
+  <view class="website-preview">
+    <view class="preview-header">
+      <view class="favicon">
+        <text class="favicon-text">{{websiteTitle.substring(0, 1)}}</text>
+      </view>
+      <view class="website-info">
+        <text class="website-title">{{websiteTitle}}</text>
+        <text class="website-url">{{websiteUrl}}</text>
+      </view>
+      <view class="action-buttons">
+        <button class="btn-action" bindtap="onShare">
+          <text class="btn-icon">↗️</text>
+          <text class="btn-text">分享</text>
+        </button>
+        <button class="btn-action {{isCollected ? 'collected' : ''}}" bindtap="onToggleCollect">
+          <text class="btn-icon">{{isCollected ? '⭐' : '☆'}}</text>
+          <text class="btn-text">{{isCollected ? '已收藏' : '收藏'}}</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 预览内容 -->
+    <view class="preview-content">
+      <web-view 
+        src="{{websiteUrl}}" 
+        wx:if="{{showWebView}}"
+      ></web-view>
+      
+      <view class="preview-placeholder" wx:else>
+        <view class="placeholder-icon">🌐</view>
+        <text class="placeholder-text">点击下方按钮查看网站</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作栏 -->
+  <view class="action-bar">
+    <button class="btn-primary" bindtap="onOpenWebsite">
+      <text class="btn-icon">🔗</text>
+      <text class="btn-text">打开网站</text>
+    </button>
+    <button class="btn-secondary" bindtap="onCopyUrl">
+      <text class="btn-icon">📋</text>
+      <text class="btn-text">复制链接</text>
+    </button>
+  </view>
+
+  <!-- 网站信息 -->
+  <view class="website-info-section">
+    <view class="section-title">网站信息</view>
+    <view class="info-grid">
+      <view class="info-item">
+        <text class="info-label">标题</text>
+        <text class="info-value">{{websiteTitle}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">网址</text>
+        <text class="info-value">{{websiteUrl}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">收藏时间</text>
+        <text class="info-value">{{collectTime}}</text>
+      </view>
+      <view class="info-item">
+        <text class="info-label">访问次数</text>
+        <text class="info-value">{{visitCount}}次</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 相关推荐 -->
+  <view class="recommend-section" wx:if="{{recommendations.length > 0}}">
+    <view class="section-title">相关推荐</view>
+    <scroll-view class="recommend-list" scroll-x="true">
+      <view 
+        class="recommend-item"
+        wx:for="{{recommendations}}"
+        wx:key="id"
+        bindtap="onRecommendTap"
+        data-item="{{item}}"
+      >
+        <view class="recommend-favicon">
+          <text class="favicon-text">{{item.title.substring(0, 1)}}</text>
+        </view>
+        <text class="recommend-title">{{item.title}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 分享弹窗 -->
+  <view class="modal {{showShareModal ? 'show' : ''}}" catchtap="onHideShareModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">分享网站</text>
+        <view class="modal-close" bindtap="onHideShareModal">×</view>
+      </view>
+      
+      <view class="modal-body">
+        <view class="share-options">
+          <button class="share-option" open-type="share">
+            <text class="share-icon">👥</text>
+            <text class="share-text">分享给好友</text>
+          </button>
+          <button class="share-option" bindtap="onGenerateQR">
+            <text class="share-icon">📱</text>
+            <text class="share-text">生成二维码</text>
+          </button>
+          <button class="share-option" bindtap="onCopyShareLink">
+            <text class="share-icon">🔗</text>
+            <text class="share-text">复制链接</text>
+          </button>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn-secondary" bindtap="onHideShareModal">取消</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 二维码弹窗 -->
+  <view class="modal {{showQRModal ? 'show' : ''}}" catchtap="onHideQRModal">
+    <view class="modal-content qr-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">网站二维码</text>
+        <view class="modal-close" bindtap="onHideQRModal">×</view>
+      </view>
+      
+      <view class="modal-body">
+        <view class="qr-code">
+          <text class="qr-placeholder">📱</text>
+          <text class="qr-text">扫描二维码访问网站</text>
+        </view>
+        <text class="qr-url">{{websiteUrl}}</text>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn-secondary" bindtap="onHideQRModal">关闭</button>
+        <button class="btn-primary" bindtap="onSaveQR">保存图片</button>
+      </view>
+    </view>
+  </view>
+</view>

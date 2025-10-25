@@ -1,0 +1,132 @@
+<!-- 收藏管理页面 -->
+<view class="collection-page">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input">
+      <input 
+        placeholder="搜索收藏的网址" 
+        bindinput="onSearchInput"
+        value="{{searchKeyword}}"
+      />
+      <view class="search-icon">🔍</view>
+    </view>
+  </view>
+
+  <!-- 标签筛选 -->
+  <scroll-view class="tag-filter" scroll-x="true">
+    <view 
+      class="tag-item {{activeTag === '' ? 'active' : ''}}"
+      bindtap="onTagSelect"
+      data-tag=""
+    >全部</view>
+    <view 
+      class="tag-item {{activeTag === tag ? 'active' : ''}}"
+      wx:for="{{tags}}"
+      wx:key="index"
+      bindtap="onTagSelect"
+      data-tag="{{tag}}"
+    >{{tag}}</view>
+  </scroll-view>
+
+  <!-- 收藏列表 -->
+  <view class="collection-list">
+    <view 
+      class="collection-item"
+      wx:for="{{filteredCollections}}"
+      wx:key="id"
+      bindtap="onItemTap"
+      data-item="{{item}}"
+    >
+      <view class="item-header">
+        <view class="favicon">
+          <text class="favicon-text">{{item.title.substring(0, 1)}}</text>
+        </view>
+        <view class="item-info">
+          <text class="title">{{item.title}}</text>
+          <text class="url">{{item.url}}</text>
+        </view>
+        <view class="item-actions">
+          <view class="tag-badge">{{item.tag}}</view>
+          <view class="more-btn" bindtap="onMoreAction" data-item="{{item}}">⋮</view>
+        </view>
+      </view>
+      
+      <view class="item-footer">
+        <text class="time">{{item.createTime}}</text>
+        <view class="action-buttons">
+          <button class="btn-mini" bindtap="onOpenUrl" data-url="{{item.url}}">打开</button>
+          <button class="btn-mini" bindtap="onShare" data-item="{{item}}">分享</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{filteredCollections.length === 0}}">
+      <view class="empty-icon">📚</view>
+      <text class="empty-text">暂无收藏</text>
+      <text class="empty-desc">从扭蛋机抽取的网址会显示在这里</text>
+      <button class="btn-primary" bindtap="onGoGacha">去抽取</button>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="add-fab" bindtap="onAddCollection">
+    <text>+</text>
+  </view>
+
+  <!-- 操作菜单 -->
+  <view class="action-sheet {{showActionSheet ? 'show' : ''}}" catchtap="onHideActionSheet">
+    <view class="action-content" catchtap="">
+      <view class="action-item" bindtap="onEditCollection">编辑</view>
+      <view class="action-item delete" bindtap="onDeleteCollection">删除</view>
+      <view class="action-item cancel" bindtap="onHideActionSheet">取消</view>
+    </view>
+  </view>
+
+  <!-- 添加/编辑弹窗 -->
+  <view class="modal {{showModal ? 'show' : ''}}" catchtap="onHideModal">
+    <view class="modal-content" catchtap="">
+      <view class="modal-header">
+        <text class="modal-title">{{isEditing ? '编辑收藏' : '添加收藏'}}</text>
+        <view class="modal-close" bindtap="onHideModal">×</view>
+      </view>
+      
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="label">标题</text>
+          <input 
+            placeholder="输入网址标题" 
+            value="{{formData.title}}"
+            bindinput="onFormInput"
+            data-field="title"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="label">网址</text>
+          <input 
+            placeholder="输入完整网址" 
+            value="{{formData.url}}"
+            bindinput="onFormInput"
+            data-field="url"
+          />
+        </view>
+        
+        <view class="form-item">
+          <text class="label">标签</text>
+          <input 
+            placeholder="输入标签（可选）" 
+            value="{{formData.tag}}"
+            bindinput="onFormInput"
+            data-field="tag"
+          />
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="btn-secondary" bindtap="onHideModal">取消</button>
+        <button class="btn-primary" bindtap="onSubmitForm">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

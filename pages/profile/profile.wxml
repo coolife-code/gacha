@@ -1,0 +1,254 @@
+<!-- pages/profile/profile.wxml -->
+<view class="profile-page">
+  <!-- 渐变背景层 -->
+  <view class="gradient-bg"></view>
+  
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <!-- 头像区域 -->
+    <view class="avatar-section">
+      <view class="avatar-wrapper">
+        <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" />
+        <view class="avatar-badge">
+          <text class="badge-text">Lv.{{userLevel}}</text>
+        </view>
+      </view>
+      <view class="user-actions">
+        <button class="action-btn edit-btn" bindtap="editProfile">
+          <text class="btn-icon">✏️</text>
+          <text class="btn-text">编辑</text>
+        </button>
+      </view>
+    </view>
+    
+    <!-- 用户信息 -->
+    <view class="user-info">
+      <text class="nickname">{{userInfo.nickName || '神秘扭蛋玩家'}}</text>
+      <text class="bio">{{userInfo.bio || '这个人很懒，什么都没写'}}</text>
+      <view class="user-tags">
+        <text class="user-tag">🎯 扭蛋达人</text>
+        <text class="user-tag">📚 收藏家</text>
+      </view>
+    </view>
+    
+    <!-- 数据统计 -->
+    <view class="stats-grid">
+      <view class="stat-item" bindtap="viewCollections">
+        <text class="stat-value">{{collections.length}}</text>
+        <text class="stat-label">收藏</text>
+        <view class="stat-progress">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{collections.length * 10}}%"></view>
+          </view>
+        </view>
+      </view>
+      <view class="stat-item" bindtap="viewDrawRecords">
+        <text class="stat-value">{{totalDraws}}</text>
+        <text class="stat-label">抽取</text>
+        <view class="stat-progress">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{totalDraws * 5}}%"></view>
+          </view>
+        </view>
+      </view>
+      <view class="stat-item" bindtap="viewFollowing">
+        <text class="stat-value">{{followingCount}}</text>
+        <text class="stat-label">关注</text>
+        <view class="stat-progress">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{followingCount * 20}}%"></view>
+          </view>
+        </view>
+      </view>
+      <view class="stat-item" bindtap="viewFollowers">
+        <text class="stat-value">{{followersCount}}</text>
+        <text class="stat-label">粉丝</text>
+        <view class="stat-progress">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{followersCount * 20}}%"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 标签页导航 - 卡片式设计 -->
+  <view class="tab-nav-card">
+    <view 
+      class="tab-item {{activeTab === 'collections' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="collections"
+    >
+      <text class="tab-icon">📚</text>
+      <text class="tab-text">我的收藏</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'records' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="records"
+    >
+      <text class="tab-icon">🎯</text>
+      <text class="tab-text">抽取记录</text>
+    </view>
+    <view 
+      class="tab-item {{activeTab === 'social' ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="social"
+    >
+      <text class="tab-icon">👥</text>
+      <text class="tab-text">社交网络</text>
+    </view>
+  </view>
+
+  <!-- 收藏列表 - 网格布局 -->
+  <view class="tab-content" wx:if="{{activeTab === 'collections'}}">
+    <!-- 收藏统计 -->
+    <view class="collection-stats">
+      <text class="stats-text">共收藏 {{collections.length}} 个网页</text>
+      <view class="stats-actions">
+        <button class="sort-btn" bindtap="sortCollections">
+          <text class="sort-icon">🔽</text>
+          <text>排序</text>
+        </button>
+        <button class="filter-btn" bindtap="filterCollections">
+          <text class="filter-icon">🔍</text>
+          <text>筛选</text>
+        </button>
+      </view>
+    </view>
+    
+    <view class="collections-grid">
+      <view 
+        class="collection-card"
+        wx:for="{{collections}}"
+        wx:key="id"
+        bindtap="viewUrlDetail"
+        data-url="{{item.url}}"
+      >
+        <view class="card-header">
+          <image class="favicon" src="{{item.favicon || '/images/default-favicon.png'}}" />
+          <view class="card-actions">
+            <button class="card-btn delete-btn" bindtap="removeCollection" data-id="{{item.id}}">
+              <text class="btn-icon">🗑️</text>
+            </button>
+          </view>
+        </view>
+        <view class="card-content">
+          <text class="card-title">{{item.title || '未命名网页'}}</text>
+          <text class="card-url">{{item.url}}</text>
+          <view class="card-tags">
+            <text class="tag" wx:for="{{item.tags.slice(0, 2)}}" wx:key="*this">{{item}}</text>
+            <text class="tag-more" wx:if="{{item.tags.length > 2}}">+{{item.tags.length - 2}}</text>
+          </view>
+        </view>
+        <view class="card-footer">
+          <text class="card-time">{{formatTime(item.collectTime)}}</text>
+          <view class="card-rating">
+            <text class="rating-star">⭐</text>
+            <text class="rating-value">{{item.rating || 5}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="empty-collection" wx:if="{{collections.length === 0}}">
+      <view class="empty-illustration">
+        <text class="empty-icon">📚</text>
+        <view class="empty-pulse"></view>
+      </view>
+      <text class="empty-title">收藏夹空空如也</text>
+      <text class="empty-desc">去扭蛋机发现有趣的网页吧！</text>
+      <button class="empty-action" bindtap="goToGacha">
+        <text class="action-icon">🎯</text>
+        <text>开始抽取</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 抽取记录 -->
+  <view class="tab-content" wx:if="{{activeTab === 'records'}}">
+    <view class="records-list">
+      <view 
+        class="record-item card"
+        wx:for="{{drawRecords}}"
+        wx:key="id"
+        bindtap="viewUrlDetail"
+        data-url="{{item.url}}"
+      >
+        <image class="favicon" src="{{item.favicon || '/images/default-favicon.png'}}" />
+        <view class="record-info">
+          <text class="title">{{item.title}}</text>
+          <text class="time">{{formatTime(item.drawTime)}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="empty-state" wx:if="{{drawRecords.length === 0}}">
+      <text class="empty-icon">🎯</text>
+      <text class="empty-text">还没有抽取记录</text>
+      <text class="empty-subtext">去扭蛋机开始你的第一次抽取吧</text>
+    </view>
+  </view>
+
+  <!-- 社交关系 -->
+  <view class="tab-content" wx:if="{{activeTab === 'social'}}">
+    <view class="social-section">
+      <view class="section-header">
+        <text class="section-title">关注的人</text>
+        <text class="view-all" bindtap="viewFollowing">查看全部</text>
+      </view>
+      <view class="user-list">
+        <view 
+          class="user-item"
+          wx:for="{{following.slice(0, 3)}}"
+          wx:key="id"
+          bindtap="viewUserProfile"
+          data-user="{{item}}"
+        >
+          <image class="avatar" src="{{item.avatar || '/images/default-avatar.png'}}" />
+          <text class="nickname">{{item.nickname}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="social-section">
+      <view class="section-header">
+        <text class="section-title">粉丝</text>
+        <text class="view-all" bindtap="viewFollowers">查看全部</text>
+      </view>
+      <view class="user-list">
+        <view 
+          class="user-item"
+          wx:for="{{followers.slice(0, 3)}}"
+          wx:key="id"
+          bindtap="viewUserProfile"
+          data-user="{{item}}"
+        >
+          <image class="avatar" src="{{item.avatar || '/images/default-avatar.png'}}" />
+          <text class="nickname">{{item.nickname}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 设置菜单 -->
+  <view class="settings-section">
+    <view class="menu-list">
+      <view class="menu-item" bindtap="editProfile">
+        <text class="menu-icon">👤</text>
+        <text class="menu-text">编辑资料</text>
+        <text class="menu-arrow">></text>
+      </view>
+      <view class="menu-item" bindtap="clearCache">
+        <text class="menu-icon">🧹</text>
+        <text class="menu-text">清理缓存</text>
+        <text class="menu-arrow">></text>
+      </view>
+      <view class="menu-item" bindtap="aboutApp">
+        <text class="menu-icon">ℹ️</text>
+        <text class="menu-text">关于应用</text>
+        <text class="menu-arrow">></text>
+      </view>
+    </view>
+  </view>
+</view>

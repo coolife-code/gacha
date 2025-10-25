@@ -1,0 +1,100 @@
+<!-- pages/gacha/gacha.wxml -->
+<view class="gacha-page">
+  <!-- 动态背景 -->
+  <view class="bg-animation">
+    <view class="particle" wx:for="{{particles}}" wx:key="id" style="left: {{item.x}}%; top: {{item.y}}%; animation-delay: {{item.delay}}s;"></view>
+  </view>
+  
+  <!-- 扭蛋机主体 -->
+  <view class="gacha-machine">
+    <!-- 机器外壳 -->
+    <view class="machine-shell">
+      <view class="machine-top">
+        <view class="display-window">
+          <view class="capsule-container {{animationState}}">
+            <view class="capsule" wx:if="{{currentCapsule}}">
+              <text class="capsule-text">扭蛋</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="machine-bottom">
+        <view class="output-tray"></view>
+      </view>
+    </view>
+    
+    <!-- 控制面板 -->
+    <view class="control-panel">
+      <button class="draw-btn {{canDraw ? 'active' : 'disabled'}}" bindtap="startDraw" disabled="{{!canDraw}}">
+        <text class="btn-text">{{canDraw ? '🎯 开始扭蛋' : '💫 次数已用完'}}</text>
+        <text class="count-text">({{remainingDraws}}/5)</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 结果展示 -->
+  <view class="result-section" wx:if="{{showResult}}">
+    <view class="result-card slide-in">
+      <view class="result-header">
+        <text class="result-title">恭喜获得！</text>
+        <text class="close-btn" bindtap="closeResult">✕</text>
+      </view>
+      
+      <view class="result-content">
+        <view class="result-icon">
+          <image class="favicon" src="{{resultData.favicon || '/images/default-favicon.png'}}" />
+        </view>
+        <view class="result-info">
+          <text class="result-name">{{resultData.title}}</text>
+          <text class="result-desc">{{resultData.description}}</text>
+          <view class="tags">
+            <text class="tag" wx:for="{{resultData.tags}}" wx:key="*this">#{{item}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="result-actions">
+        <button class="action-btn primary" bindtap="openUrl">🌐 打开网页</button>
+        <button class="action-btn secondary" bindtap="toggleCollect">
+          {{resultData.collected ? '⭐ 已收藏' : '☆ 收藏'}}
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="history-section">
+    <view class="section-title">最近抽取</view>
+    <scroll-view class="history-list" scroll-x="true">
+      <view class="history-item" wx:for="{{historyList}}" wx:key="id" bindtap="viewHistory" data-item="{{item}}">
+        <image class="item-favicon" src="{{item.favicon || '/images/default-favicon.png'}}" />
+        <text class="item-title">{{item.title}}</text>
+      </view>
+      <view class="empty-history" wx:if="{{historyList.length === 0}}">
+        <text class="empty-text">暂无记录</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section">
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{totalDraws}}</text>
+        <text class="stat-label">总抽取</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{collectionCount}}</text>
+        <text class="stat-label">收藏数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{todayDraws}}</text>
+        <text class="stat-label">今日抽取</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{streakDays}}</text>
+        <text class="stat-label">连续天数</text>
+      </view>
+    </view>
+  </view>
+</view>
